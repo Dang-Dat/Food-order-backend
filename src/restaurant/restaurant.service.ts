@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import aqp from 'api-query-params';
 import { IUser } from 'src/users/user.interface';
+import mongoose, { Types } from 'mongoose';
 
 @Injectable()
 export class RestaurantService {
@@ -66,7 +67,10 @@ export class RestaurantService {
   }
 
   async getRestaurantOrders(id: string) {
-    const restaurant = await this.restaurantModel.findById({ _id: id })
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return "not found "
+    }
+    const restaurant = await this.restaurantModel.findById(id)
 
     if (!restaurant) {
       throw new NotFoundException("not found")

@@ -64,7 +64,7 @@ export class RestaurantController {
   }
 
   @Get(':id')
-  getRestaurantOrders(@Param() id: string) {
+  getRestaurantOrders(@Param('id') id: string) {
     return this.restaurantService.getRestaurantOrders(id);
   }
 
