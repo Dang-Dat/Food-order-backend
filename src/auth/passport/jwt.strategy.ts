@@ -19,11 +19,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 cache: true,
                 rateLimit: true,
                 jwksRequestsPerMinute: 5,
-                jwksUri: `${configService.get<string>('AUTH0_ISSUER_BASE_URL')}.well-known/jwks.json`,
+                jwksUri: `https://dev-4wx7vsmaxo1217sh.us.auth0.com/.well-known/jwks.json`,
             }),
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            audience: configService.get<string>('AUTH0_AUDIENCE'),
-            issuer: configService.get<string>('AUTH0_ISSUER_BASE_URL'),
+            audience: `https://myapp.com/api`,
+            issuer: `https://dev-4wx7vsmaxo1217sh.us.auth0.com/`,
             algorithms: ['RS256'],
         });
     }

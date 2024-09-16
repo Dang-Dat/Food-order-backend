@@ -140,8 +140,8 @@ export class StripeService {
         orderId,
         restaurantId,
       },
-      success_url: `${process.env.FRONTEND_URL}/order-status?success=true`,
-      cancel_url: `${process.env.FRONTEND_URL}/detail/${restaurantId}?cancelled=true`,
+      success_url: `${this.configService.get<string>('FRONTEND_URL')}/order-status?success=true`,
+      cancel_url: `${this.configService.get<string>('FRONTEND_URL')}/detail/${restaurantId}?cancelled=true`,
     });
 
     return sessionData;
