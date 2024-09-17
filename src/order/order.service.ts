@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Req } from '@nestjs/common';
+import { Injectable, NotFoundException, Req, UnauthorizedException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
@@ -29,7 +29,7 @@ export class OrderService {
     return order;
   }
 
-  async findOrdersByUserId(user: IUser) {
+  async findOne(user: IUser) {
     const order = await this.orderModel.findOne({ user: user._id })
       .populate("restaurant")
       .populate("user")
@@ -39,14 +39,38 @@ export class OrderService {
     return order
   }
 
-  async update(orderId: string, updateOrderDto: UpdateOrderDto, userId: string) {
+  async fetchAllMyRestaurantOrder(user: IUser) {
+    const order = await this.orderModel.find({ user: user._id })
+      .populate("restaurant")
+      .populate("user")
+    if (!order) {
+      throw new NotFoundException("khong tim thay don hang")
+    }
+    return order
+  }
+
+
+
+  async fetchAllMyOrder(user: IUser) {
+    const order = await this.orderModel.find({ user: user._id })
+      .populate("restaurant")
+      .populate("user")
+    if (!order) {
+      throw new NotFoundException("khong tim thay don hang")
+    }
+    return order
+  }
+
+
+  async update(orderId: string, updateOrderDto: UpdateOrderDto, user: IUser) {
     const order = await this.orderModel.findById(orderId)
     if (!order) {
       throw new NotFoundException('Khong tim thay don hang')
     }
     const restaurant = await this.restaurantModel.findById(order.restaurant);
-    if (!restaurant || restaurant.userId.toString() !== userId) {
-      throw new Error('Unauthorized');
+    const check = restaurant.userId.toString() !== user._id
+    if (!restaurant || check === false) {
+      throw new UnauthorizedException("unauthorized ");
     }
 
     return await this.orderModel.updateOne(

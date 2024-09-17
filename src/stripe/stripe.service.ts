@@ -7,6 +7,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { CheckoutSessionRequest } from './dto/create-stripe.dto';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
+import { IUser } from 'src/users/user.interface';
 
 @Injectable()
 export class StripeService {
@@ -16,7 +17,7 @@ export class StripeService {
     private readonly stripe: Stripe,
     private configService: ConfigService,
   ) {
-    this.stripe = new Stripe(configService.get<string>('STRIPE_WEBHOOK_SECRET'), {
+    this.stripe = new Stripe(configService.get<string>('STRIPE_API_KEY'), {
       apiVersion: '2024-06-20',
     });
   }
@@ -25,7 +26,7 @@ export class StripeService {
     // console.log("received enent")
     // console.log("received enent")
     // console.log(" event:", body)
-    // return "ok"
+    //return "ok"
     let event: Stripe.Event;
 
     try {
@@ -47,6 +48,7 @@ export class StripeService {
       })
       // order.totalAmount = event.data.object.amount_total;
       // order.status = 'paid';
+      // await this.orderModel.updateOne({ _id: order._id }, {status: 'paid', totalAmount})
       // await order.save();
     }
 
@@ -55,22 +57,20 @@ export class StripeService {
 
   async createCheckoutSession(
     checkoutSessionRequest: CheckoutSessionRequest,
-    user: any,
+    user: IUser,
   ) {
     try {
       const restaurant = await this.restaurantModel.findById(checkoutSessionRequest.restaurantId);
-
+      console.log(checkoutSessionRequest)
       if (!restaurant) {
         throw new Error('Restaurant not found');
       }
-
-      const newOrder = new this.orderModel({
-        restaurant: restaurant,
+      const newOrder = await this.orderModel.create({
+        restaurant: restaurant._id,
         user: user._id,
         status: 'placed',
         deliveryDetails: checkoutSessionRequest.deliveryDetails,
         cartItems: checkoutSessionRequest.cartItems,
-        createdAt: new Date(),
       });
 
       const lineItems = this.createLineItems(checkoutSessionRequest, restaurant.menuItems);
@@ -81,9 +81,10 @@ export class StripeService {
         return new Error('Error creating stripe session');
       }
 
-      await newOrder.save();
+      // await newOrder.save();
+
       return { url: session.url };
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       return new Error("{ message: error.message }");
     }

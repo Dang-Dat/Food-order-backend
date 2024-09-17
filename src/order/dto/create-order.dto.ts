@@ -50,10 +50,7 @@ class DeliveryDetailsDTO {
     @ValidateNested({ each: true })
     @Type(() => CartItemDTO)
     cartItems: CartItemDTO[];
-  
-    @IsNumber()
-    @IsNotEmpty()
-    totalAmount: number;
+
   
     @IsEnum(['placed', 'paid', 'inProgress', 'outForDelivery', 'delivered'])
     @IsNotEmpty()

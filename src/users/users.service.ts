@@ -107,8 +107,6 @@ export class UsersService {
 
   async update(user: IUser, updateUserDto: UpdateUserDto) {
     const isExist = await this.userModel.findOne({ email: updateUserDto.email })
-    console.log("data",isExist)
-
     if (!isExist) {
       throw new NotFoundException('Nguoi dung khong ton tai');
     }

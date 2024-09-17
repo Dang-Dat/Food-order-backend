@@ -47,12 +47,9 @@ export class RestaurantController {
     @Body() updateRestaurantDto: UpdateRestaurantDto,
     @UploadedFile() file?: Express.Multer.File) {
     if (file) {
-      // Handle file if it exists
-      console.log('File received:', file);
+
       return this.restaurantService.update(user, updateRestaurantDto, file.filename);
     } else {
-      // Handle case when file is not provided
-      console.log('No file received');
       return this.restaurantService.update(user, updateRestaurantDto, null);
     }
 

@@ -22,9 +22,16 @@ export class OrderController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get()
+  @Get("my/restaurant")
   getMyRestaurantOrders(@User() user: IUser) {
-    return this.orderService.findOrdersByUserId(user);
+    return this.orderService.fetchAllMyRestaurantOrder(user);
+  }
+
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get("my")
+  getMyOrder(@User() user: IUser) {
+    return this.orderService.fetchAllMyOrder(user);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -32,9 +39,9 @@ export class OrderController {
   update(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
-    @Req() req: Request,
+    @User() user: IUser,
   ) {
-    return this.orderService.update(id, updateOrderDto, req.body.userId);
+    return this.orderService.update(id, updateOrderDto, user);
   }
 
   @Delete(':id')

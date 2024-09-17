@@ -44,7 +44,7 @@ export class Order {
         name: string;
     }>;
 
-    @Prop({ type: Number, required: true })
+    @Prop({ type: Number})
     totalAmount: number;
 
     @Prop({
