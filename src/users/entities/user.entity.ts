@@ -7,7 +7,7 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-    @Prop({ required: true })
+    @Prop()
     auth0Id: string;
 
     @Prop({ required: true })
@@ -27,6 +27,8 @@ export class User {
 
     @Prop()
     country: string;
+
+
 
     @Prop({ type: Object })
     createdBy: {

@@ -22,39 +22,20 @@ export class UsersService {
   }
 
   async register(user: RegisterUserDto) {
-    const { auth0Id, name, email, password, address, } = user;
+    const {name, email, password,  } = user;
     //check email
     const isExist = await this.userModel.findOne({ email: email })
     if (isExist) {
       throw new BadRequestException(`Email: ${email} da ton tai. Vui long su dung email khac`)
     }
 
-
     const hassPassword = this.getHashPassword(password);
     let newRegister = await this.userModel.create({
-      auth0Id, name, email, password: hassPassword, address,
-      role: "User"
+       name, email, password: hassPassword, 
     })
     return newRegister
   }
 
-
-  async registerWithGG(user: RegisterUserDto) {
-    const { auth0Id, name, email, password, address, } = user;
-    //check email
-    const isExist = await this.userModel.findOne({ email: email })
-    if (isExist) {
-      throw new BadRequestException(`Email: ${email} da ton tai. Vui long su dung email khac`)
-    }
-
-
-    const hassPassword = this.getHashPassword(password);
-    let newRegister = await this.userModel.create({
-      auth0Id, name, email, password: hassPassword, address,
-      role: "User"
-    })
-    return newRegister
-  }
 
   async findOneByUsername(email: string) {
     return this.userModel.findOne({
@@ -96,8 +77,8 @@ export class UsersService {
     return currentUser;
   }
 
-  async getUserData(auth0Id: string) {
-    const currentUser = await this.userModel.findOne({ auth0Id: auth0Id });
+  async getUserData(auth0Id: string, email: string) {
+    const currentUser = await this.userModel.findOne({ email: email });
 
     if (!currentUser) {
       throw new NotFoundException('Nguoi dung khong ton tai');

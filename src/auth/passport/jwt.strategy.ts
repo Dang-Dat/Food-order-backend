@@ -14,7 +14,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private userService: UsersService,
     ) {
         super({
-            // Cung cấp secretOrKeyProvider để lấy key từ JWKS
             secretOrKeyProvider: passportJwtSecret({
                 cache: true,
                 rateLimit: true,
@@ -29,8 +28,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        const { sub } = payload;
-        const user = await this.userService.getUserData(sub)
+        const { sub, email } = payload;
+        const user = await this.userService.getUserData(sub, email)
 
 
         // Trả về thông tin người dùng để được gán vào req.user

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-// import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { IUser } from 'src/users/user.interface';
 import { UsersService } from 'src/users/users.service';
@@ -10,7 +10,7 @@ import ms from 'ms';
 export class AuthService {
     constructor(
         private usersService: UsersService,
-        // private jwtService: JwtService,
+        private jwtService: JwtService,
         private configService: ConfigService,
     ) { }
 
@@ -31,23 +31,24 @@ export class AuthService {
     }
 
     async login(user: IUser, response: Response) {
-        // const { auth0Id, email, } = user
+        const { auth0Id, email, } = user
 
-        // const payload = {
-        //     sub: "token login",
-        //     iss: "from sever",
-        //     auth0Id,
-        //     email,
+        const payload = {
+            sub: "token login",
+            iss: "from sever",
+            auth0Id,
+            email,
+        }
 
-        // }
-        // response.cookie("access_token", this.jwtService.sign(payload), {
-        //     httpOnly: true,
-        //     maxAge: ms(this.configService.get<string>("JWT_ACCESS_EXPIRE"))/1000,
-        // })
-        // return {
-        //     access_token: this.jwtService.sign(payload),
-        //     user
-        // }
+        const access_token = this.jwtService.sign(payload);
+        response.cookie("access_token", access_token, {
+            httpOnly: true,
+            maxAge: ms(this.configService.get<string>("JWT_ACCESS_EXPIRE")) / 1000,
+        })
+        return {
+            access_token: access_token,
+            user
+        }
     }
 
     async register(user: RegisterUserDto) {
